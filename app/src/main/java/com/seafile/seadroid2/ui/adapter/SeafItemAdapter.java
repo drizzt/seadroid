@@ -544,7 +544,7 @@ public class SeafItemAdapter extends BaseAdapter {
     }
 
     private int getThumbnailWidth() {
-        return (int) SeadroidApplication.getAppContext().getResources().getDimension(R.dimen.lv_icon_width);
+        return 256;
     }
 
     public void setEncryptedRepo(boolean encrypted) {

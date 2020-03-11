@@ -873,7 +873,7 @@ public class Utils {
     }
 
     public static int getThumbnailWidth() {
-        return (int) SeadroidApplication.getAppContext().getResources().getDimension(R.dimen.gallery_icon_show);
+        return 1280;
     }
 
     public static boolean isServiceRunning(Context context, String ServiceName) {
