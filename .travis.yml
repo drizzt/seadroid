@@ -3,6 +3,14 @@ language: android
 
 sudo: false
 jdk: oraclejdk8
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:fdroid/fdroidserver'
+    packages:
+      - fdroidserver
+      - openssh-client
+
 android:
   components:
       - tools
@@ -20,6 +28,8 @@ before_install:
 # https://docs.travis-ci.com/user/languages/android/#Caching
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -f  $HOME/.gradle/caches/*/fileHashes/fileHashes.lock
+  - rm -f  $HOME/.gradle/caches/transforms-1/transforms-1.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
@@ -32,3 +42,9 @@ script:
     - keytool -genkey -v -keystore app/debug.keystore -alias AndroidDebugKey -keyalg RSA -keysize 2048 -validity 1 -storepass android -keypass android -dname "cn=TEST, ou=TEST, o=TEST, c=TE"
     - ./gradlew assemble
     - ./gradlew test
+after_success:
+    # FIXME fdroid nightly currently doesn't support --file and it only copy files that ends with '-debug.apk'
+    - cp -lv app/build/outputs/apk/release/*.apk app/build/outputs/apk/release/app-debug.apk
+    # FIXME fdroidserver tries to use the wrong branch on -nightly repository
+    - sudo sed -i "s:'/' + _branch + '/fdroid':'/master/fdroid':" /usr/lib/python3/dist-packages/fdroidserver/nightly.py
+    - fdroid nightly --verbose
